@@ -82,6 +82,12 @@ class Settings(BaseSettings):
     AWS_SECRET_ACCESS_KEY: str = ""
     AVATAR_MAX_SIZE_MB: int = 5
 
+    # Admin
+    ADMIN_API_KEY: str = ""
+
+    # Beta access
+    BETA_INVITE_CODE: str = ""
+
 
 @lru_cache
 def get_settings() -> Settings:

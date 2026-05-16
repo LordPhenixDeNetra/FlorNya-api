@@ -39,15 +39,15 @@ async def _set_bloom(db_session, email: str) -> None:
 
 
 async def test_cycle_records_free_user_rejected(client) -> None:
-    """Free users should not be able to create cycle records (essential required)."""
+    """Free users cannot create cycle records — essential plan required."""
     token = await _register(client, "cycle_free@extras.com")
     r = await client.post(
         "/api/v1/cycle/records",
         headers={"Authorization": f"Bearer {token}"},
         json={"period_start": "2026-01-01", "cycle_length": 28},
     )
-    # free plan: endpoint now requires at least essential
-    assert r.status_code in (403, 200)  # depends on whether guard is applied
+    assert r.status_code == 403
+    assert r.json()["detail"] == "essential_plan_required"
 
 
 async def test_essential_user_can_access_cycle(client, db_session) -> None:
@@ -79,19 +79,48 @@ async def test_bloom_user_has_essential_access(client, db_session) -> None:
 # ── Beta access ─────────────────────────────────────────────────────────────
 
 
-async def test_activate_beta(client) -> None:
+async def test_activate_beta_valid_code(client) -> None:
+    """With no BETA_INVITE_CODE configured (empty), any code is accepted."""
     token = await _register(client, "beta_user@extras.com")
-    r = await client.post("/api/v1/users/me/beta-activate", headers={"Authorization": f"Bearer {token}"})
+    r = await client.post(
+        "/api/v1/users/me/beta-activate",
+        params={"invite_code": "any-code-works-when-not-configured"},
+        headers={"Authorization": f"Bearer {token}"},
+    )
     assert r.status_code == 200
-    # verify beta_access reflected (plan still free)
     me = await client.get("/api/v1/users/me", headers={"Authorization": f"Bearer {token}"})
     assert me.status_code == 200
 
 
-async def test_beta_activate_idempotent(client) -> None:
+async def test_activate_beta_wrong_code_rejected(client, monkeypatch) -> None:
+    """Wrong invite code returns 403 when BETA_INVITE_CODE is set."""
+    import app.api.v1.users as users_module
+    import app.config as config_module
+
+    s = config_module.get_settings()
+    monkeypatch.setattr(s, "BETA_INVITE_CODE", "secret123")
+
+    token = await _register(client, "beta_user3@extras.com")
+    r = await client.post(
+        "/api/v1/users/me/beta-activate",
+        params={"invite_code": "wrongcode"},
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert r.status_code == 403
+
+
+async def test_activate_beta_idempotent(client) -> None:
     token = await _register(client, "beta_user2@extras.com")
-    r1 = await client.post("/api/v1/users/me/beta-activate", headers={"Authorization": f"Bearer {token}"})
-    r2 = await client.post("/api/v1/users/me/beta-activate", headers={"Authorization": f"Bearer {token}"})
+    r1 = await client.post(
+        "/api/v1/users/me/beta-activate",
+        params={"invite_code": "any"},
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    r2 = await client.post(
+        "/api/v1/users/me/beta-activate",
+        params={"invite_code": "any"},
+        headers={"Authorization": f"Bearer {token}"},
+    )
     assert r1.status_code == 200
     assert r2.status_code == 200
 

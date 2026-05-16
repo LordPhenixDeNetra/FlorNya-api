@@ -512,3 +512,11 @@ async def require_beta(current_user: User = Depends(get_current_user)) -> User:
     if not current_user.beta_access:
         raise HTTPException(status_code=403, detail="beta_access_required")
     return current_user
+
+
+async def require_admin(
+    request: Request,
+) -> None:
+    key = request.headers.get("X-Admin-Key", "")
+    if not key or key != settings.ADMIN_API_KEY:
+        raise HTTPException(status_code=403, detail="admin_access_required")

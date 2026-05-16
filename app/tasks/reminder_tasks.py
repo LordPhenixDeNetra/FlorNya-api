@@ -178,3 +178,25 @@ async def _async_send_pregnancy_appointment_reminders() -> None:
 
 def _log_notification(user_id: str, message: str, notification_type: str) -> None:
     print(f"[NOTIFICATION] user={user_id} type={notification_type} message={message}")
+    _run(_async_push_notification(user_id, message, notification_type))
+
+
+async def _async_push_notification(user_id: str, message: str, notification_type: str) -> None:
+    from uuid import UUID
+
+    from app.repositories.device_token_repository import DeviceTokenRepository
+    from app.services.push_notification_service import PushNotificationService
+
+    push = PushNotificationService()
+    async with async_session_factory() as session:
+        repo = DeviceTokenRepository(session)
+        tokens = await repo.list_active_by_user(UUID(user_id))
+        if not tokens:
+            return
+        token_strings = [t.token for t in tokens]
+        await push.send_multicast(
+            tokens=token_strings,
+            title="FlorNya",
+            body=message,
+            data={"type": notification_type},
+        )

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Request
 
-from app.api.deps import get_current_user, get_reminder_service
+from app.api.deps import get_current_user, get_reminder_service, require_essential
 from app.core.middleware import limiter
 from app.models.user import User
 from app.schemas.reminder import ReminderConfigCreate, ReminderConfigPublic, ReminderType
@@ -13,7 +13,7 @@ router = APIRouter()
 @limiter.limit("60/minute")
 async def list_reminders(
     request: Request,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_essential),
     service: ReminderService = Depends(get_reminder_service),
 ) -> list[ReminderConfigPublic]:
     return await service.list_reminders(current_user)
@@ -25,7 +25,7 @@ async def upsert_reminder(
     request: Request,
     reminder_type: ReminderType,
     data: ReminderConfigCreate,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_essential),
     service: ReminderService = Depends(get_reminder_service),
 ) -> ReminderConfigPublic:
     return await service.upsert_reminder(current_user, reminder_type, data)
@@ -36,7 +36,7 @@ async def upsert_reminder(
 async def delete_reminder(
     request: Request,
     reminder_type: ReminderType,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_essential),
     service: ReminderService = Depends(get_reminder_service),
 ) -> None:
     try:

@@ -2,7 +2,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 
-from app.api.deps import get_current_user, get_mental_service, require_bloom
+from app.api.deps import get_current_user, get_mental_service, require_bloom, require_essential
 from app.core.middleware import limiter
 from app.models.user import User
 from app.schemas.common import CursorPaginatedResponse
@@ -29,7 +29,7 @@ router = APIRouter()
 async def create_mood(
     request: Request,
     data: MoodLogCreate,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_essential),
     service: MentalService = Depends(get_mental_service),
 ) -> MoodLogPublic:
     return await service.create_mood(current_user, data)
@@ -40,7 +40,7 @@ async def create_mood(
 async def list_moods(
     request: Request,
     params: MoodFilterParams = Depends(),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_essential),
     service: MentalService = Depends(get_mental_service),
 ) -> CursorPaginatedResponse[MoodLogPublic]:
     return await service.list_moods(current_user, params)

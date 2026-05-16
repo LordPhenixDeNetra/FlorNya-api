@@ -56,8 +56,9 @@ async def test_dashboard_empty(client) -> None:
     assert data["cycle"] is None
 
 
-async def test_dashboard_with_cycle(client) -> None:
+async def test_dashboard_with_cycle(client, db_session) -> None:
     token = await _register(client, "dash_cycle@example.com")
+    await _set_bloom(db_session, "dash_cycle@example.com")  # bloom includes essential
     today = str(date.today() - timedelta(days=7))
     await client.post(
         "/api/v1/cycle/records",
@@ -75,8 +76,9 @@ async def test_dashboard_with_cycle(client) -> None:
 # ── Mental Health ──────────────────────────────────────────────────────────
 
 
-async def test_create_mood_triggers_no_alert(client) -> None:
+async def test_create_mood_triggers_no_alert(client, db_session) -> None:
     token = await _register(client, "mood_good@example.com")
+    await _set_bloom(db_session, "mood_good@example.com")  # bloom includes essential
     r = await client.post(
         "/api/v1/mental/mood",
         headers={"Authorization": f"Bearer {token}"},

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import Response
 
-from app.api.deps import get_current_user, get_cycle_service, require_bloom, require_bloom_pro
+from app.api.deps import get_current_user, get_cycle_service, require_bloom, require_bloom_pro, require_essential
 from app.core.middleware import limiter
 from app.models.user import User
 from app.schemas.common import PaginatedResponse
@@ -21,12 +21,12 @@ from app.services.cycle_service import CycleService
 router = APIRouter()
 
 
-@router.post("/records", response_model=CycleRecordPublic)
+@router.post("/records", response_model=CycleRecordPublic, status_code=201)
 @limiter.limit("60/minute")
 async def create_record(
     request: Request,
     data: CycleRecordCreate,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_essential),
     service: CycleService = Depends(get_cycle_service),
 ) -> CycleRecordPublic:
     return await service.create_record(current_user, data)
@@ -37,7 +37,7 @@ async def create_record(
 async def list_records(
     request: Request,
     params: CycleFilterParams = Depends(),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_essential),
     service: CycleService = Depends(get_cycle_service),
 ) -> PaginatedResponse[CycleRecordPublic]:
     return await service.list_records(current_user, params)
@@ -47,7 +47,7 @@ async def list_records(
 @limiter.limit("60/minute")
 async def current_cycle(
     request: Request,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_essential),
     service: CycleService = Depends(get_cycle_service),
 ) -> CurrentCycleResponse:
     try:
@@ -62,7 +62,7 @@ async def get_calendar(
     request: Request,
     year: int,
     month: int,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_essential),
     service: CycleService = Depends(get_cycle_service),
 ) -> CalendarResponse:
     if not (1 <= month <= 12):
@@ -75,7 +75,7 @@ async def get_calendar(
 async def log_symptoms(
     request: Request,
     data: SymptomLogCreate,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_essential),
     service: CycleService = Depends(get_cycle_service),
 ) -> SymptomLogPublic:
     return await service.log_symptoms(current_user, data)
@@ -86,7 +86,7 @@ async def log_symptoms(
 async def list_symptoms(
     request: Request,
     params: SymptomFilterParams = Depends(),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_essential),
     service: CycleService = Depends(get_cycle_service),
 ) -> list[SymptomLogPublic]:
     return await service.list_symptoms(current_user, params)

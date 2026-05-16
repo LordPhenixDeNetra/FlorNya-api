@@ -16,6 +16,18 @@ async def _register_and_login(client, email="user_p1@example.com") -> str:
     return r.json()["access_token"]
 
 
+async def _set_essential(db_session, email: str) -> None:
+    from sqlalchemy import select
+
+    from app.models.user import User, UserPlan
+
+    result = await db_session.execute(select(User).where(User.email == email))
+    user = result.scalar_one_or_none()
+    if user:
+        user.plan = UserPlan.essential
+        await db_session.commit()
+
+
 # ── Auth ─────────────────────────────────────────────────────────────────────
 
 
@@ -93,8 +105,9 @@ async def test_delete_account(client) -> None:
 # ── Cycle ─────────────────────────────────────────────────────────────────────
 
 
-async def test_create_cycle_record_with_flow(client) -> None:
+async def test_create_cycle_record_with_flow(client, db_session) -> None:
     token = await _register_and_login(client, "cycle_flow@example.com")
+    await _set_essential(db_session, "cycle_flow@example.com")
     period_start = str(date.today() - timedelta(days=5))
     r = await client.post(
         "/api/v1/cycle/records",
@@ -106,14 +119,15 @@ async def test_create_cycle_record_with_flow(client) -> None:
             "flow_intensity": "medium",
         },
     )
-    assert r.status_code == 200
+    assert r.status_code == 201
     data = r.json()
     assert data["flow_intensity"] == "medium"
     assert data["period_end"] is not None
 
 
-async def test_get_calendar(client) -> None:
+async def test_get_calendar(client, db_session) -> None:
     token = await _register_and_login(client, "calendar_test@example.com")
+    await _set_essential(db_session, "calendar_test@example.com")
     period_start = str(date.today().replace(day=1))
     await client.post(
         "/api/v1/cycle/records",
@@ -134,8 +148,9 @@ async def test_get_calendar(client) -> None:
     assert day_keys.issubset(set(data["days"][0].keys()))
 
 
-async def test_log_and_list_symptoms(client) -> None:
+async def test_log_and_list_symptoms(client, db_session) -> None:
     token = await _register_and_login(client, "symptoms_test@example.com")
+    await _set_essential(db_session, "symptoms_test@example.com")
     today = str(date.today())
     r = await client.post(
         "/api/v1/cycle/symptoms",
@@ -165,8 +180,9 @@ async def test_log_and_list_symptoms(client) -> None:
     assert len(r2.json()) == 1
 
 
-async def test_symptom_upsert(client) -> None:
+async def test_symptom_upsert(client, db_session) -> None:
     token = await _register_and_login(client, "upsert_sym@example.com")
+    await _set_essential(db_session, "upsert_sym@example.com")
     today = str(date.today())
     await client.post(
         "/api/v1/cycle/symptoms",
@@ -190,8 +206,9 @@ async def test_symptom_upsert(client) -> None:
 # ── Reminders ─────────────────────────────────────────────────────────────────
 
 
-async def test_create_and_list_reminders(client) -> None:
+async def test_create_and_list_reminders(client, db_session) -> None:
     token = await _register_and_login(client, "reminders_test@example.com")
+    await _set_essential(db_session, "reminders_test@example.com")
     r = await client.put(
         "/api/v1/reminders/period",
         headers={"Authorization": f"Bearer {token}"},
@@ -208,8 +225,9 @@ async def test_create_and_list_reminders(client) -> None:
     assert len(r2.json()) == 1
 
 
-async def test_delete_reminder(client) -> None:
+async def test_delete_reminder(client, db_session) -> None:
     token = await _register_and_login(client, "del_reminder@example.com")
+    await _set_essential(db_session, "del_reminder@example.com")
     await client.put(
         "/api/v1/reminders/hydration",
         headers={"Authorization": f"Bearer {token}"},
@@ -225,8 +243,9 @@ async def test_delete_reminder(client) -> None:
     assert r2.json() == []
 
 
-async def test_delete_nonexistent_reminder_returns_404(client) -> None:
+async def test_delete_nonexistent_reminder_returns_404(client, db_session) -> None:
     token = await _register_and_login(client, "noreminder@example.com")
+    await _set_essential(db_session, "noreminder@example.com")
     r = await client.delete(
         "/api/v1/reminders/medication",
         headers={"Authorization": f"Bearer {token}"},
