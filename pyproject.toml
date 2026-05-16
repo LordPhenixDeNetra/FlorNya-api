@@ -25,6 +25,15 @@ python-dotenv = "^1.0.0"
 structlog = "^24.0.0"
 slowapi = "^0.1.0"
 cryptography = "^43.0.0"
+anthropic = "^0.30"
+stripe = "^10.0"
+pyotp = "^2.9"
+qrcode = { extras = ["pil"], version = "^7.4" }
+celery = { extras = ["redis"], version = "^5.4" }
+celery-redbeat = "^2.2"
+weasyprint = "^62.0"
+jinja2 = "^3.1"
+aiosmtplib = "^3.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.0"

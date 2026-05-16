@@ -20,3 +20,15 @@ class UserRepository(BaseRepository[User]):
             select(User).where(User.id == user_id, User.is_active.is_(True), User.deleted_at.is_(None))
         )
         return result.scalar_one_or_none()
+
+    async def get_by_reset_token(self, token: str) -> User | None:
+        result = await self.session.execute(
+            select(User).where(User.password_reset_token == token)
+        )
+        return result.scalar_one_or_none()
+
+    async def get_by_stripe_customer_id(self, stripe_customer_id: str) -> User | None:
+        result = await self.session.execute(
+            select(User).where(User.stripe_customer_id == stripe_customer_id)
+        )
+        return result.scalar_one_or_none()

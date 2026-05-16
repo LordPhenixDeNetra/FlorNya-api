@@ -4,7 +4,7 @@ from uuid import UUID
 from sqlalchemy import Select, asc, desc, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.cycle_record import CycleRecord
+from app.models.cycle_record import CycleRecord, FlowIntensity
 from app.repositories.base import BaseRepository
 
 
@@ -17,13 +17,17 @@ class CycleRepository(BaseRepository[CycleRecord]):
         *,
         user_id: UUID,
         period_start: date,
+        period_end: date | None = None,
         cycle_length: int,
+        flow_intensity: FlowIntensity | None = None,
         notes_encrypted: str | None,
     ) -> CycleRecord:
         entity = CycleRecord(
             user_id=user_id,
             period_start=period_start,
+            period_end=period_end,
             cycle_length=cycle_length,
+            flow_intensity=flow_intensity,
             notes_encrypted=notes_encrypted,
         )
         return await self.add(entity)

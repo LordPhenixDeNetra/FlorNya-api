@@ -36,6 +36,52 @@ class Settings(BaseSettings):
     AUTH_LOCKOUT_MAX_ATTEMPTS: int = 10
     AUTH_LOCKOUT_SECONDS: int = 3600
 
+    # Email (SMTP)
+    SMTP_HOST: str = "smtp.sendgrid.net"
+    SMTP_PORT: int = 587
+    SMTP_USER: str = ""
+    SMTP_PASSWORD: str = ""
+    EMAIL_FROM: str = "noreply@flornya.app"
+    FRONTEND_URL: str = "http://localhost:5173"
+    PASSWORD_RESET_EXPIRE_MINUTES: int = 60
+
+    # 2FA
+    TOTP_ISSUER: str = "FlorNya"
+
+    # Stripe
+    STRIPE_SECRET_KEY: str = ""
+    STRIPE_WEBHOOK_SECRET: str = ""
+    STRIPE_PRICE_ESSENTIAL: str = ""
+    STRIPE_PRICE_BLOOM: str = ""
+    STRIPE_PRICE_BLOOM_PRO: str = ""
+
+    # Anthropic
+    ANTHROPIC_API_KEY: str = ""
+    AI_INSIGHTS_MODEL: str = "claude-haiku-4-5-20251001"
+
+    # Rate limiting avancé
+    RATE_LIMIT_AI: str = "20/hour"
+    RATE_LIMIT_REPORTS: str = "5/day"
+    RATE_LIMIT_PASSWORD_RESET: str = "5/minute"
+
+    # Celery
+    CELERY_BROKER_URL: str = "redis://localhost:6379/1"
+
+    # Firebase Cloud Messaging (push notifications)
+    FIREBASE_CREDENTIALS_PATH: str = ""
+    FIREBASE_PROJECT_ID: str = ""
+
+    # Telegram Bot
+    TELEGRAM_BOT_TOKEN: str = ""
+    TELEGRAM_WEBHOOK_SECRET: str = ""
+
+    # S3 / Object storage (photo upload)
+    S3_BUCKET_NAME: str = ""
+    S3_REGION: str = "eu-west-3"
+    AWS_ACCESS_KEY_ID: str = ""
+    AWS_SECRET_ACCESS_KEY: str = ""
+    AVATAR_MAX_SIZE_MB: int = 5
+
 
 @lru_cache
 def get_settings() -> Settings:

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 12px; color: #333; }
+    .header {
+      background: linear-gradient(135deg, #6a1b9a 0%, #ce93d8 100%);
+      color: white; padding: 32px 40px; margin-bottom: 28px;
+    }
+    .header h1 { font-size: 22px; font-weight: 700; }
+    .header p { font-size: 12px; opacity: 0.85; margin-top: 6px; }
+    .container { padding: 0 40px 40px; }
+    .section { margin-bottom: 24px; }
+    h2 { font-size: 14px; font-weight: 700; color: #6a1b9a; margin: 20px 0 10px; border-bottom: 2px solid #f3e5f5; padding-bottom: 4px; }
+    h3 { font-size: 12px; font-weight: 700; color: #7b1fa2; margin: 14px 0 6px; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 12px; }
+    thead th { background: #f3e5f5; color: #4a148c; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; padding: 7px 10px; text-align: left; font-weight: 700; }
+    tbody tr:nth-child(even) { background: #fafafa; }
+    tbody td { padding: 6px 10px; border-bottom: 1px solid #f0f0f0; font-size: 11px; }
+    .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 12px 0; }
+    .stat-card { background: #f9f0ff; border-left: 3px solid #9c27b0; padding: 10px 12px; border-radius: 4px; }
+    .stat-card .value { font-size: 20px; font-weight: 700; color: #6a1b9a; }
+    .stat-card .label { font-size: 10px; color: #666; margin-top: 2px; }
+    .mood-bar-container { display: flex; align-items: center; gap: 8px; margin: 2px 0; }
+    .mood-dot { width: 10px; height: 10px; border-radius: 50%; background: #9c27b0; flex-shrink: 0; }
+    .mood-bar { height: 10px; border-radius: 5px; background: linear-gradient(90deg, #e91e63, #9c27b0); }
+    .ai-insight { background: #f8f4ff; border-left: 4px solid #7b1fa2; padding: 12px 16px; margin: 16px 0; font-size: 11px; line-height: 1.6; color: #444; border-radius: 0 4px 4px 0; }
+    .disclaimer { background: #fff3e0; border-left: 3px solid #ff9800; padding: 10px 14px; margin-top: 20px; font-size: 10px; color: #e65100; }
+    .footer { margin-top: 36px; padding-top: 10px; border-top: 1px solid #eee; font-size: 10px; color: #aaa; text-align: center; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 700; }
+    .badge-green { background: #e8f5e9; color: #2e7d32; }
+    .badge-orange { background: #fff3e0; color: #e65100; }
+    .badge-red { background: #ffebee; color: #c62828; }
+    .phase-menstrual { color: #e53935; }
+    .phase-follicular { color: #43a047; }
+    .phase-ovulatory { color: #fb8c00; }
+    .phase-luteal { color: #8e24aa; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>FlorNya — Rapport Médical Mensuel</h1>
+    <p>{{ month_label }} · Généré le {{ generated_at }} · Pour {{ user_name }}</p>
+  </div>
+
+  <div class="container">
+    <!-- Stats résumé -->
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="value">{{ cycle_records | length }}</div>
+        <div class="label">Cycles enregistrés</div>
+      </div>
+      <div class="stat-card">
+        <div class="value">{{ avg_mood }}</div>
+        <div class="label">Humeur moyenne</div>
+      </div>
+      <div class="stat-card">
+        <div class="value">{{ avg_nutrition_score }}</div>
+        <div class="label">Score nutrition</div>
+      </div>
+    </div>
+
+    <!-- Cycle -->
+    {% if cycle_records %}
+    <h2>Journal du Cycle</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Début des règles</th>
+          <th>Durée du cycle</th>
+          <th>Intensité du flux</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in cycle_records %}
+        <tr>
+          <td>{{ c.period_start }}</td>
+          <td>{{ c.cycle_length }} jours</td>
+          <td>{{ c.flow_intensity }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+
+    <!-- Humeur -->
+    {% if mood_records %}
+    <h2>Suivi Émotionnel</h2>
+    <table>
+      <thead>
+        <tr><th>Date</th><th>Score d'humeur</th><th>Tendance</th></tr>
+      </thead>
+      <tbody>
+        {% for m in mood_records %}
+        <tr>
+          <td>{{ m.log_date }}</td>
+          <td>
+            {% if m.mood_score >= 4 %}
+              <span class="badge badge-green">{{ m.mood_score }}/5 😊</span>
+            {% elif m.mood_score >= 3 %}
+              <span class="badge badge-orange">{{ m.mood_score }}/5 😐</span>
+            {% else %}
+              <span class="badge badge-red">{{ m.mood_score }}/5 😔</span>
+            {% endif %}
+          </td>
+          <td>
+            <div class="mood-bar-container">
+              <div class="mood-bar" style="width: {{ m.mood_score * 20 }}px;"></div>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+
+    <!-- Symptômes -->
+    {% if symptom_records %}
+    <h2>Journal des Symptômes</h2>
+    <table>
+      <thead>
+        <tr><th>Date</th><th>Crampes</th><th>Fatigue</th><th>Ballonnements</th><th>Énergie</th></tr>
+      </thead>
+      <tbody>
+        {% for s in symptom_records %}
+        <tr>
+          <td>{{ s.log_date }}</td>
+          <td>{{ s.cramps }}</td>
+          <td>{{ s.fatigue }}</td>
+          <td>{{ s.bloating }}</td>
+          <td>{{ s.energy }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+
+    <!-- Analyse IA -->
+    {% if monthly_summary %}
+    <h2>Analyse IA — Bloom</h2>
+    <div class="ai-insight">
+      {{ monthly_summary | replace('\n', '<br>') }}
+    </div>
+    {% endif %}
+
+    <div class="disclaimer">
+      ⚠️ Ce rapport est généré automatiquement par FlorNya à titre informatif. Il ne remplace pas
+      un avis médical professionnel. Partagez ce document avec votre gynécologue ou médecin traitant
+      lors de votre prochaine consultation.
+    </div>
+
+    <div class="footer">FlorNya Bloom Pro · Rapport confidentiel · {{ generated_at }}</div>
+  </div>
+</body>
+</html>

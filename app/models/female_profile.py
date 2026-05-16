@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import enum
+from datetime import date
 from uuid import UUID
 
-from sqlalchemy import Enum, ForeignKey, Integer, String, UniqueConstraint, Uuid
+from sqlalchemy import Date, Enum, ForeignKey, Integer, String, Text, UniqueConstraint, Uuid
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import BaseModel
@@ -29,5 +30,14 @@ class FemaleProfile(BaseModel):
     cycle_length: Mapped[int] = mapped_column(Integer, default=28, nullable=False)
     period_length: Mapped[int] = mapped_column(Integer, default=5, nullable=False)
     timezone: Mapped[str] = mapped_column(String(64), default="UTC", nullable=False)
+
+    # Données santé chiffrées (JSON lists)
+    allergies_encrypted: Mapped[str | None] = mapped_column(Text, nullable=True)
+    health_conditions_encrypted: Mapped[str | None] = mapped_column(Text, nullable=True)
+    cuisine_preference: Mapped[str | None] = mapped_column(String(100), nullable=True)
+
+    # Rappels cycle
+    period_reminder_days_before: Mapped[int] = mapped_column(Integer, default=2, nullable=False)
+    last_period_reminder_sent: Mapped[date | None] = mapped_column(Date, nullable=True)
 
     user: Mapped["User"] = relationship(back_populates="female_profile")

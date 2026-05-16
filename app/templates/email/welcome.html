@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Bienvenue sur FlorNya 🌸</h2>
+<p>Bonjour{% if first_name %} <strong>{{ first_name }}</strong>{% endif %},</p>
+<p>Votre compte FlorNya a été créé avec succès. Nous sommes ravis de vous accompagner dans votre parcours de bien-être féminin.</p>
+<a href="{{ frontend_url }}/onboarding" class="btn">Commencer l'onboarding</a>
+<p style="color:#888;font-size:13px;">Pour toute question, contactez-nous à <a href="mailto:hello@flornya.app" style="color:#e91e8c">hello@flornya.app</a></p>
+{% endblock %}
