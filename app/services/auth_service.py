@@ -18,6 +18,7 @@ from app.core.security import (
     decrypt_sensitive,
     encrypt_sensitive,
     hash_password,
+    hash_reset_token,
     verify_minimum_age,
     verify_password,
 )
@@ -117,13 +118,15 @@ class AuthService:
             return  # Silent — security
 
         token = secrets.token_urlsafe(32)
-        user.password_reset_token = token
+        # Stocker uniquement le hash SHA-256 — si la DB fuite, les tokens sont inutilisables
+        user.password_reset_token = hash_reset_token(token)
         user.password_reset_expires = datetime.now(timezone.utc) + timedelta(
             minutes=settings.PASSWORD_RESET_EXPIRE_MINUTES
         )
         await self.session.commit()
 
         if self.email_service:
+            # Envoyer le token brut par email (jamais le hash)
             await self.email_service.send_password_reset(
                 to_email=user.email,
                 token=token,
@@ -131,7 +134,7 @@ class AuthService:
             )
 
     async def confirm_password_reset(self, *, token: str, new_password: str) -> None:
-        user = await self.users.get_by_reset_token(token)
+        user = await self.users.get_by_reset_token(hash_reset_token(token))
         if user is None:
             raise ValueError("invalid_reset_token")
         if user.password_reset_expires is None:
@@ -227,7 +230,24 @@ class AuthService:
 
         user.is_2fa_enabled = False
         user.totp_secret_encrypted = None
+        # Invalider tous les tokens existants — changement de sécurité critique
+        user.token_version += 1
         await self.session.commit()
+        await self._revoke_all_refresh_tokens(user_id)
+
+    async def logout(self, *, access_token: str) -> None:
+        """Blackliste le JTI de l'access token courant pour révocation immédiate."""
+        try:
+            payload = decode_token(access_token)
+        except ValueError:
+            return  # Token déjà invalide
+        jti = payload.get("jti")
+        exp = payload.get("exp")
+        if not jti or not exp:
+            return
+        now = int(datetime.now(timezone.utc).timestamp())
+        ttl = max(exp - now, 1)
+        await redis_client.set(f"blacklist:{jti}", "1", ex=ttl)
 
     # ── Helpers ───────────────────────────────────────────────────────────
 

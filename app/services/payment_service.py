@@ -1,6 +1,17 @@
 from datetime import datetime, timezone
 
 import stripe
+import structlog
+
+logger = structlog.get_logger(__name__)
+
+_ALLOWED_WEBHOOK_EVENTS = frozenset({
+    "invoice.payment_succeeded",
+    "customer.subscription.updated",
+    "customer.subscription.deleted",
+})
+
+_WEBHOOK_TIMESTAMP_TOLERANCE_SECONDS = 300
 
 from app.config import get_settings
 from app.models.stripe_invoice import StripeInvoice
@@ -90,13 +101,21 @@ class PaymentService:
     async def handle_webhook(self, payload: bytes, sig_header: str) -> None:
         try:
             event = stripe.Webhook.construct_event(
-                payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
+                payload,
+                sig_header,
+                settings.STRIPE_WEBHOOK_SECRET,
+                tolerance=_WEBHOOK_TIMESTAMP_TOLERANCE_SECONDS,
             )
         except (stripe.error.SignatureVerificationError, ValueError):
             raise ValueError("invalid_webhook_signature")
 
         event_type = event["type"]
+        if event_type not in _ALLOWED_WEBHOOK_EVENTS:
+            logger.debug("stripe.webhook.ignored", event_type=event_type, event_id=event["id"])
+            return
+
         data = event["data"]["object"]
+        logger.info("stripe.webhook.processing", event_type=event_type, event_id=event["id"])
 
         if event_type == "invoice.payment_succeeded":
             await self._handle_invoice_succeeded(data)

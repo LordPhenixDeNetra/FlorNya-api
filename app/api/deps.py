@@ -468,14 +468,20 @@ async def get_current_user(
     creds: HTTPAuthorizationCredentials | None = Depends(bearer),
     users: UserRepository = Depends(get_user_repository),
 ) -> User:
+    from app.core.redis import redis_client
+
     if creds is None:
         raise HTTPException(status_code=401, detail="missing_token")
     payload = decode_token(creds.credentials)
     if payload.get("typ") != "access":
         raise HTTPException(status_code=401, detail="invalid_token")
     sub = payload.get("sub")
+    jti = payload.get("jti")
     if not isinstance(sub, str):
         raise HTTPException(status_code=401, detail="invalid_token")
+    # Vérifier que le JTI n'est pas blacklisté (logout explicite)
+    if jti and await redis_client.exists(f"blacklist:{jti}"):
+        raise HTTPException(status_code=401, detail="token_revoked")
     user_id = UUID(sub)
     user = await users.get_active(user_id)
     if user is None:
@@ -517,6 +523,11 @@ async def require_beta(current_user: User = Depends(get_current_user)) -> User:
 async def require_admin(
     request: Request,
 ) -> None:
+    import secrets as _secrets
+
+    if not settings.ADMIN_API_KEY:
+        raise HTTPException(status_code=403, detail="admin_not_configured")
     key = request.headers.get("X-Admin-Key", "")
-    if not key or key != settings.ADMIN_API_KEY:
+    # Comparaison en temps constant pour éviter timing attacks
+    if not key or not _secrets.compare_digest(key, settings.ADMIN_API_KEY):
         raise HTTPException(status_code=403, detail="admin_access_required")

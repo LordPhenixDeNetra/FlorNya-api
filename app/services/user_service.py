@@ -3,9 +3,10 @@ import io
 import json
 from datetime import datetime, timezone
 
+from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.security import decrypt_sensitive, encrypt_sensitive
+from app.core.security import decrypt_sensitive, detect_image_type, encrypt_sensitive, strip_image_exif
 from app.models.female_profile import FemaleProfile, ReproductiveStage
 from app.models.user import User
 from app.repositories.cycle_repository import CycleRepository
@@ -257,6 +258,12 @@ class UserService:
         from app.config import get_settings
 
         settings = get_settings()
+
+        detected_mime = detect_image_type(content)
+        if detected_mime is None:
+            raise HTTPException(status_code=415, detail="unsupported_image_type")
+        content = strip_image_exif(content, detected_mime)
+        content_type = detected_mime
 
         if settings.S3_BUCKET_NAME and settings.AWS_ACCESS_KEY_ID:
             import aiobotocore.session as aio_session

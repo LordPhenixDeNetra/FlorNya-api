@@ -169,3 +169,18 @@ async def totp_disable(
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     return Response(status_code=204)
+
+
+@router.post("/logout", status_code=204)
+@limiter.limit("30/minute")
+async def logout(
+    request: Request,
+    current_user: User = Depends(get_current_user),
+    service: AuthService = Depends(get_auth_service),
+) -> Response:
+    """Révoque le JTI de l'access token courant et tous les refresh tokens."""
+    auth = request.headers.get("authorization", "")
+    access_token = auth.split(" ", 1)[1].strip() if " " in auth else ""
+    await service.logout(access_token=access_token)
+    await service._revoke_all_refresh_tokens(current_user.id)
+    return Response(status_code=204)

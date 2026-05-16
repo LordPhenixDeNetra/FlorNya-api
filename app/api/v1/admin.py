@@ -1,3 +1,4 @@
+import structlog
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Request
@@ -10,6 +11,7 @@ from app.core.middleware import limiter
 from app.models.user import User, UserPlan
 from app.schemas.user import UserPublic, UserPlan as PlanSchema
 
+logger = structlog.get_logger(__name__)
 router = APIRouter()
 
 
@@ -52,8 +54,10 @@ async def set_user_plan(
     user = result.scalar_one_or_none()
     if user is None:
         raise HTTPException(status_code=404, detail="user_not_found")
+    old_plan = user.plan.value
     user.plan = UserPlan(plan.value)
     await session.commit()
+    logger.info("admin.set_plan", user_id=str(user_id), old_plan=old_plan, new_plan=user.plan.value)
     return {"id": str(user.id), "plan": user.plan.value}
 
 
@@ -72,6 +76,7 @@ async def set_user_beta(
         raise HTTPException(status_code=404, detail="user_not_found")
     user.beta_access = enabled
     await session.commit()
+    logger.info("admin.set_beta", user_id=str(user_id), beta_access=enabled)
     return {"id": str(user.id), "beta_access": user.beta_access}
 
 
@@ -89,3 +94,4 @@ async def hard_delete_user(
         raise HTTPException(status_code=404, detail="user_not_found")
     await session.delete(user)
     await session.commit()
+    logger.warning("admin.hard_delete_user", user_id=str(user_id))

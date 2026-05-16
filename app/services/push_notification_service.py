@@ -1,4 +1,5 @@
 """Push notification service — Firebase FCM with graceful stub fallback."""
+import hashlib
 import logging
 
 from app.config import get_settings
@@ -25,10 +26,14 @@ class PushNotificationService:
             except Exception as exc:
                 logger.warning("Firebase init failed — falling back to stub: %s", exc)
 
+    @staticmethod
+    def _token_hint(token: str) -> str:
+        return hashlib.sha256(token.encode()).hexdigest()[:16]
+
     async def send(self, token: str, title: str, body: str, data: dict | None = None) -> bool:
         """Send a push notification. Returns True on success."""
         if self._fcm_app is None:
-            logger.info("[PUSH-STUB] token=%s title=%r body=%r", token[:20], title, body)
+            logger.info("[PUSH-STUB] token_hint=%s title=%r body=%r", self._token_hint(token), title, body)
             return True
 
         try:
@@ -52,7 +57,7 @@ class PushNotificationService:
 
         if self._fcm_app is None:
             for token in tokens:
-                logger.info("[PUSH-STUB] token=%s title=%r", token[:20], title)
+                logger.info("[PUSH-STUB] token_hint=%s title=%r", self._token_hint(token), title)
             return len(tokens)
 
         try:

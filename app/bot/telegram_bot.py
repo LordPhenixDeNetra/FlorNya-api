@@ -16,6 +16,9 @@ TELEGRAM_API = "https://api.telegram.org"
 async def verify_webhook_secret(secret_token: str | None) -> bool:
     """Validate the X-Telegram-Bot-Api-Secret-Token header."""
     if not settings.TELEGRAM_WEBHOOK_SECRET:
+        logger.warning(
+            "TELEGRAM_WEBHOOK_SECRET is not set — all Telegram webhook requests are accepted without validation"
+        )
         return True
     if secret_token is None:
         return False

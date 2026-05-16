@@ -21,9 +21,10 @@ class UserRepository(BaseRepository[User]):
         )
         return result.scalar_one_or_none()
 
-    async def get_by_reset_token(self, token: str) -> User | None:
+    async def get_by_reset_token(self, token_hash: str) -> User | None:
+        """Cherche par hash SHA-256 du token (le token brut n'est jamais stocké)."""
         result = await self.session.execute(
-            select(User).where(User.password_reset_token == token)
+            select(User).where(User.password_reset_token == token_hash)
         )
         return result.scalar_one_or_none()
 
