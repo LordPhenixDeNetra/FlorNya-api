@@ -1,8 +1,9 @@
 """Celery tasks for sending periodic reminders to users."""
 import asyncio
 from datetime import date, timedelta
+from uuid import UUID
 
-from sqlalchemy import select, update
+from sqlalchemy import select
 
 from app.celery_app import celery_app
 from app.core.database import async_session_factory
@@ -15,6 +16,33 @@ from app.services.phase_calculator import PhaseCalculator
 
 def _run(coro):
     return asyncio.get_event_loop().run_until_complete(coro)
+
+
+# ── Push helper — async, appelé avec await depuis les tâches async ────────────
+
+
+async def _push(user_id: str, message: str, notification_type: str) -> None:
+    """Log + envoyer push FCM. Doit être awaited depuis une coroutine."""
+    print(f"[NOTIFICATION] user={user_id} type={notification_type} message={message}")
+
+    from app.repositories.device_token_repository import DeviceTokenRepository
+    from app.services.push_notification_service import PushNotificationService
+
+    push = PushNotificationService()
+    async with async_session_factory() as session:
+        repo = DeviceTokenRepository(session)
+        tokens = await repo.list_active_by_user(UUID(user_id))
+        if not tokens:
+            return
+        await push.send_multicast(
+            tokens=[t.token for t in tokens],
+            title="FlorNya",
+            body=message,
+            data={"type": notification_type},
+        )
+
+
+# ── Tâches Celery ─────────────────────────────────────────────────────────────
 
 
 @celery_app.task(name="app.tasks.reminder_tasks.send_period_reminders")
@@ -49,7 +77,7 @@ async def _async_send_period_reminders() -> None:
                 if days_until == days_before:
                     if profile and profile.last_period_reminder_sent == today:
                         continue
-                    _log_notification(
+                    await _push(
                         str(config.user_id),
                         f"Votre prochaine période est dans {days_before} jours.",
                         "period_reminder",
@@ -77,9 +105,8 @@ async def _async_send_medication_reminders() -> None:
         current_hour = datetime.now(timezone.utc).strftime("%H")
 
         for config in configs:
-            reminder_hour = config.time_of_day[:2]
-            if reminder_hour == current_hour:
-                _log_notification(
+            if config.time_of_day[:2] == current_hour:
+                await _push(
                     str(config.user_id),
                     "N'oubliez pas votre médicament.",
                     "medication_reminder",
@@ -97,7 +124,7 @@ async def _async_send_hydration_reminders() -> None:
         configs = await reminder_repo.list_enabled_by_type(ReminderType.hydration)
 
         for config in configs:
-            _log_notification(
+            await _push(
                 str(config.user_id),
                 "Pensez à boire de l'eau ! 💧",
                 "hydration_reminder",
@@ -127,7 +154,7 @@ async def _async_send_mood_checkin_reminders() -> None:
                 )
                 if items:
                     continue
-                _log_notification(
+                await _push(
                     str(config.user_id),
                     "Comment vous sentez-vous aujourd'hui ?",
                     "mood_checkin_reminder",
@@ -159,14 +186,14 @@ async def _async_send_pregnancy_appointment_reminders() -> None:
         for appt in appointments:
             days_until = (appt.appointment_date - today).days
             if days_until == 7 and not appt.reminder_sent_7d:
-                _log_notification(
+                await _push(
                     str(appt.user_id),
                     f"Rappel : rendez-vous \"{appt.title}\" dans 7 jours ({appt.appointment_date}).",
                     "pregnancy_appointment_7d",
                 )
                 appt.reminder_sent_7d = True
             elif days_until == 1 and not appt.reminder_sent_1d:
-                _log_notification(
+                await _push(
                     str(appt.user_id),
                     f"Rappel : rendez-vous \"{appt.title}\" demain ({appt.appointment_date}).",
                     "pregnancy_appointment_1d",
@@ -174,29 +201,3 @@ async def _async_send_pregnancy_appointment_reminders() -> None:
                 appt.reminder_sent_1d = True
 
         await session.commit()
-
-
-def _log_notification(user_id: str, message: str, notification_type: str) -> None:
-    print(f"[NOTIFICATION] user={user_id} type={notification_type} message={message}")
-    _run(_async_push_notification(user_id, message, notification_type))
-
-
-async def _async_push_notification(user_id: str, message: str, notification_type: str) -> None:
-    from uuid import UUID
-
-    from app.repositories.device_token_repository import DeviceTokenRepository
-    from app.services.push_notification_service import PushNotificationService
-
-    push = PushNotificationService()
-    async with async_session_factory() as session:
-        repo = DeviceTokenRepository(session)
-        tokens = await repo.list_active_by_user(UUID(user_id))
-        if not tokens:
-            return
-        token_strings = [t.token for t in tokens]
-        await push.send_multicast(
-            tokens=token_strings,
-            title="FlorNya",
-            body=message,
-            data={"type": notification_type},
-        )

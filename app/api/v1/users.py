@@ -10,6 +10,7 @@ from app.core.middleware import limiter
 from app.models.user import User
 from app.repositories.device_token_repository import DeviceTokenRepository
 from app.schemas.user import (
+    BetaActivateRequest,
     DeviceTokenRegister,
     ExtendedProfileUpdate,
     FemaleProfilePublic,
@@ -171,13 +172,13 @@ async def upload_avatar(
 @limiter.limit("5/minute")
 async def activate_beta(
     request: Request,
-    invite_code: str,
+    data: BetaActivateRequest,
     current_user: User = Depends(get_current_user),
     service: UserService = Depends(get_user_service),
 ) -> UserPublic:
     from app.config import get_settings
 
     s = get_settings()
-    if s.BETA_INVITE_CODE and invite_code != s.BETA_INVITE_CODE:
+    if s.BETA_INVITE_CODE and data.invite_code != s.BETA_INVITE_CODE:
         raise HTTPException(status_code=403, detail="invalid_invite_code")
     return await service.activate_beta(current_user)

@@ -84,7 +84,7 @@ async def test_activate_beta_valid_code(client) -> None:
     token = await _register(client, "beta_user@extras.com")
     r = await client.post(
         "/api/v1/users/me/beta-activate",
-        params={"invite_code": "any-code-works-when-not-configured"},
+        json={"invite_code": "any-code-works-when-not-configured"},
         headers={"Authorization": f"Bearer {token}"},
     )
     assert r.status_code == 200
@@ -94,7 +94,6 @@ async def test_activate_beta_valid_code(client) -> None:
 
 async def test_activate_beta_wrong_code_rejected(client, monkeypatch) -> None:
     """Wrong invite code returns 403 when BETA_INVITE_CODE is set."""
-    import app.api.v1.users as users_module
     import app.config as config_module
 
     s = config_module.get_settings()
@@ -103,7 +102,7 @@ async def test_activate_beta_wrong_code_rejected(client, monkeypatch) -> None:
     token = await _register(client, "beta_user3@extras.com")
     r = await client.post(
         "/api/v1/users/me/beta-activate",
-        params={"invite_code": "wrongcode"},
+        json={"invite_code": "wrongcode"},
         headers={"Authorization": f"Bearer {token}"},
     )
     assert r.status_code == 403
@@ -113,12 +112,12 @@ async def test_activate_beta_idempotent(client) -> None:
     token = await _register(client, "beta_user2@extras.com")
     r1 = await client.post(
         "/api/v1/users/me/beta-activate",
-        params={"invite_code": "any"},
+        json={"invite_code": "any"},
         headers={"Authorization": f"Bearer {token}"},
     )
     r2 = await client.post(
         "/api/v1/users/me/beta-activate",
-        params={"invite_code": "any"},
+        json={"invite_code": "any"},
         headers={"Authorization": f"Bearer {token}"},
     )
     assert r1.status_code == 200

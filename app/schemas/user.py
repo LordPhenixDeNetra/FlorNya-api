@@ -85,3 +85,7 @@ class DevicePlatform(str, enum.Enum):
 class DeviceTokenRegister(BaseModel):
     token: str = Field(..., min_length=10, max_length=512)
     platform: DevicePlatform
+
+
+class BetaActivateRequest(BaseModel):
+    invite_code: str = Field(..., min_length=1, max_length=128)
