@@ -37,10 +37,12 @@ class Settings(BaseSettings):
     AUTH_LOCKOUT_SECONDS: int = 3600
 
     # Email (SMTP)
-    SMTP_HOST: str = "smtp.sendgrid.net"
+    SMTP_HOST: str = ""
     SMTP_PORT: int = 587
     SMTP_USER: str = ""
     SMTP_PASSWORD: str = ""
+    # starttls (port 587, la plupart des providers) | ssl (port 465) | none (port 25 / dev)
+    SMTP_TLS_MODE: str = "starttls"
     EMAIL_FROM: str = "noreply@flornya.app"
     FRONTEND_URL: str = "http://localhost:5173"
     PASSWORD_RESET_EXPIRE_MINUTES: int = 60

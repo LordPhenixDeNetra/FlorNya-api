@@ -14,6 +14,7 @@ _ALLOWED_WEBHOOK_EVENTS = frozenset({
 _WEBHOOK_TIMESTAMP_TOLERANCE_SECONDS = 300
 
 from app.config import get_settings
+from app.interfaces.email_interface import IEmailService
 from app.models.stripe_invoice import StripeInvoice
 from app.models.user import User, UserPlan
 from app.repositories.stripe_invoice_repository import StripeInvoiceRepository
@@ -28,6 +29,30 @@ from app.schemas.payment import (
 from sqlalchemy.ext.asyncio import AsyncSession
 
 settings = get_settings()
+
+_PLAN_DISPLAY = {
+    UserPlan.essential: "Essential",
+    UserPlan.bloom: "Bloom",
+    UserPlan.bloom_pro: "Bloom Pro",
+}
+
+_PLAN_FEATURES: dict[UserPlan, list[str]] = {
+    UserPlan.essential: [
+        "Suivi de cycle illimité",
+        "Journal d'humeur & symptômes",
+        "Rappels personnalisés",
+    ],
+    UserPlan.bloom: [
+        "Tout Essential",
+        "Insights IA de votre cycle",
+        "Calendrier de fertilité",
+    ],
+    UserPlan.bloom_pro: [
+        "Tout Bloom",
+        "Export PDF mensuel",
+        "Assistance prioritaire",
+    ],
+}
 
 _PLAN_PRICE_MAP = {
     PlanName.essential: settings.STRIPE_PRICE_ESSENTIAL,
@@ -52,10 +77,12 @@ class PaymentService:
         session: AsyncSession,
         users: UserRepository,
         invoices: StripeInvoiceRepository,
+        email_service: IEmailService | None = None,
     ):
         self.session = session
         self.users = users
         self.invoices = invoices
+        self.email_service = email_service
         stripe.api_key = settings.STRIPE_SECRET_KEY
 
     async def _get_or_create_customer(self, user: User) -> str:
@@ -156,6 +183,7 @@ class PaymentService:
         if subscription_id:
             user.stripe_subscription_id = subscription_id
 
+        new_plan: UserPlan | None = None
         lines = invoice.get("lines", {}).get("data", [])
         for line in lines:
             price_id = line.get("price", {}).get("id")
@@ -167,6 +195,14 @@ class PaymentService:
                     break
 
         await self.session.commit()
+
+        if new_plan and self.email_service and new_plan in _PLAN_FEATURES:
+            await self.email_service.send_subscription_confirmed(
+                to_email=user.email,
+                first_name=user.first_name,
+                plan_name=_PLAN_DISPLAY.get(new_plan, new_plan.value.title()),
+                plan_features=_PLAN_FEATURES[new_plan],
+            )
 
     async def _handle_subscription_updated(self, subscription: dict) -> None:
         customer_id = subscription.get("customer")

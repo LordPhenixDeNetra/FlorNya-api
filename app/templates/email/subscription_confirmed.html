@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}Abonnement {{ plan_name }} actif — FlorNya{% endblock %}
+{% block content %}
+
+<!-- Sparkle icon -->
+<div style="text-align:center; padding-bottom:24px;">
+  <span style="font-size:40px; line-height:1; display:block;">✨</span>
+</div>
+
+<!-- Title -->
+<h2 style="margin:0 0 24px; font-size:20px; font-weight:700; color:#1a1a2e;
+           text-align:center; letter-spacing:-0.2px;">
+  Abonnement <span style="color:#e91e8c;">{{ plan_name }}</span> actif !
+</h2>
+
+<!-- Greeting -->
+<p style="margin:0 0 14px; color:#1a1a2e;">
+  Bonjour{% if first_name %} <strong>{{ first_name }}</strong>{% endif %},
+</p>
+<p style="margin:0 0 32px; color:#4a3a46;">
+  Merci pour votre confiance. Votre abonnement <strong>{{ plan_name }}</strong> est maintenant actif. Découvrez tout ce qui est disponible pour vous :
+</p>
+
+<!-- Features heading -->
+<p style="margin:0 0 12px; font-size:11px; font-weight:700; color:#a09098;
+          letter-spacing:0.8px; text-transform:uppercase;">
+  Fonctionnalités débloquées
+</p>
+
+<!-- Features list -->
+<table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-bottom:36px;">
+  {% for feature in plan_features %}
+  <tr>
+    <td style="padding:10px 0;
+               {% if not loop.last %}border-bottom:1px solid #f7eef4;{% endif %}">
+      <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+        <tr>
+          <td style="width:32px; font-size:14px; font-weight:700; color:#e91e8c;
+                     vertical-align:middle; padding-right:12px;">✓</td>
+          <td style="font-size:14px; color:#4a3a46; vertical-align:middle; line-height:1.5;">
+            {{ feature }}
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+
+<!-- CTA -->
+<div style="text-align:center; padding-bottom:32px;">
+  <a href="{{ frontend_url }}/dashboard" class="btn-primary"
+     style="display:inline-block; padding:14px 40px; background-color:#e91e8c; color:#ffffff;
+            text-decoration:none; border-radius:8px; font-size:15px; font-weight:700;
+            font-family:Arial,Helvetica,sans-serif;">
+    Accéder à mon espace &rarr;
+  </a>
+</div>
+
+<!-- Billing support -->
+<p style="margin:0; font-size:13px; color:#a09098; text-align:center;">
+  Une question sur votre facturation ?
+  <a href="mailto:hello@flornya.app" style="color:#e91e8c; text-decoration:none;">hello@flornya.app</a>
+</p>
+
+{% endblock %}

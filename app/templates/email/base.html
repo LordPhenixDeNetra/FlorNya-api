@@ -3,31 +3,142 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #fdf6f9; margin: 0; padding: 0; }
-    .container { max-width: 560px; margin: 40px auto; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
-    .header { background: linear-gradient(135deg, #e91e8c, #c2185b); padding: 32px 40px; text-align: center; }
-    .header h1 { color: #fff; margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -0.5px; }
-    .header p { color: rgba(255,255,255,0.85); margin: 6px 0 0; font-size: 14px; }
-    .body { padding: 36px 40px; color: #2d2d2d; line-height: 1.6; }
-    .body h2 { font-size: 18px; margin-top: 0; color: #1a1a1a; }
-    .btn { display: inline-block; margin: 24px 0; padding: 14px 32px; background: #e91e8c; color: #fff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 15px; }
-    .footer { padding: 20px 40px; background: #fdf6f9; text-align: center; font-size: 12px; color: #999; border-top: 1px solid #f0e6ec; }
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="x-apple-disable-message-reformatting">
+  <title>{% block title %}FlorNya{% endblock %}</title>
+  <style type="text/css">
+    /* ── Reset ──────────────────────────────────────────────────────── */
+    body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+    table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; border-collapse: collapse; }
+    img { border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
+    body { margin: 0 !important; padding: 0 !important; background-color: #faf5f8;
+           font-family: Arial, Helvetica, sans-serif; }
+
+    /* ── Button ─────────────────────────────────────────────────────── */
+    .btn-primary {
+      display: inline-block;
+      padding: 14px 40px;
+      background-color: #e91e8c;
+      color: #ffffff !important;
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: Arial, Helvetica, sans-serif;
+      letter-spacing: 0.2px;
+    }
+
+    /* ── Feature row ────────────────────────────────────────────────── */
+    .feature-icon-td { width: 36px; font-size: 18px; vertical-align: middle; padding-right: 12px; }
+    .feature-text-td { font-size: 14px; color: #4a3a46; vertical-align: middle; line-height: 1.5; }
+    .feature-row-td  { padding: 10px 0; border-bottom: 1px solid #f7eef4; }
+    .feature-row-last { padding: 10px 0; }
+
+    /* ── Info block ─────────────────────────────────────────────────── */
+    .info-block-td {
+      padding: 14px 18px;
+      background-color: #fdf5f9;
+      border-left: 3px solid #e91e8c;
+      border-radius: 0 8px 8px 0;
+      font-size: 14px;
+      color: #6b5b6e;
+    }
+
+    /* ── Dark mode ──────────────────────────────────────────────────── */
+    @media (prefers-color-scheme: dark) {
+      body              { background-color: #18090f !important; }
+      .outer-bg         { background-color: #18090f !important; }
+      .email-card       { background-color: #26111b !important; }
+      .header-td        { background-color: #26111b !important; }
+      .body-td          { background-color: #26111b !important; color: #f0daea !important; }
+      .footer-td        { background-color: #1a0d14 !important; border-color: #3d1f30 !important; }
+      .divider-inner    { background-color: #3d1f30 !important; }
+      .logo-name        { color: #f5e0ee !important; }
+      .feature-text-td  { color: #d4b0c4 !important; }
+      .feature-row-td, .feature-row-last { border-color: #3d1f30 !important; }
+      .info-block-td    { background-color: #321526 !important; color: #d4a0b8 !important; }
+    }
+
+    /* ── Mobile ─────────────────────────────────────────────────────── */
+    @media only screen and (max-width: 620px) {
+      .email-card  { border-radius: 0 !important; }
+      .header-td   { padding: 28px 24px 22px !important; }
+      .body-td     { padding: 32px 24px !important; }
+      .inner-div   { margin: 0 24px !important; }
+      .footer-td   { padding: 20px 24px !important; }
+      .btn-primary { display: block !important; text-align: center !important; }
+    }
   </style>
 </head>
-<body>
-  <div class="container">
-    <div class="header">
-      <h1>🌸 FlorNya</h1>
-      <p>Fleuris à chaque étape.</p>
-    </div>
-    <div class="body">
-      {% block content %}{% endblock %}
-    </div>
-    <div class="footer">
-      © 2026 FlorNya · <a href="{{ frontend_url }}" style="color:#e91e8c">flornya.app</a>
-      <br>Cet email a été envoyé automatiquement, merci de ne pas y répondre.
-    </div>
-  </div>
+<body style="margin:0; padding:0; background-color:#faf5f8;">
+
+  <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" class="outer-bg"
+         style="background-color:#faf5f8;">
+    <tr>
+      <td align="center" style="padding:40px 16px;">
+
+        <!-- ── Card ────────────────────────────────────────────────── -->
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" class="email-card"
+               style="max-width:600px; width:100%; background-color:#ffffff; border-radius:16px; overflow:hidden;
+                      box-shadow:0 2px 20px rgba(233,30,140,0.07);">
+
+          <!-- Accent bar -->
+          <tr>
+            <td style="height:4px; background-color:#e91e8c; font-size:0; line-height:0;">&nbsp;</td>
+          </tr>
+
+          <!-- Header -->
+          <tr>
+            <td class="header-td" align="center"
+                style="background-color:#ffffff; padding:38px 48px 28px;">
+              <span style="font-size:30px; line-height:1; display:block; margin-bottom:10px;">🌸</span>
+              <span class="logo-name"
+                    style="font-size:22px; font-weight:700; color:#1a1a2e; letter-spacing:-0.3px; display:block;">
+                Flor<span style="color:#e91e8c;">Nya</span>
+              </span>
+              <span style="font-size:11px; color:#a09098; letter-spacing:1px;
+                           text-transform:uppercase; margin-top:5px; display:block;">
+                Fleuris à chaque étape
+              </span>
+            </td>
+          </tr>
+
+          <!-- Header / body separator -->
+          <tr>
+            <td>
+              <div class="inner-div divider-inner"
+                   style="height:1px; background-color:#f0e6ec; margin:0 48px; font-size:0;">&nbsp;</div>
+            </td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td class="body-td"
+                style="padding:40px 48px; font-size:15px; line-height:1.7;
+                       color:#1a1a2e; font-family:Arial,Helvetica,sans-serif; background-color:#ffffff;">
+              {% block content %}{% endblock %}
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td class="footer-td" align="center"
+                style="background-color:#faf5f8; padding:22px 48px;
+                       border-top:1px solid #f0e6ec; font-family:Arial,Helvetica,sans-serif;">
+              <p style="margin:0 0 4px; font-size:11px; color:#a09098;">
+                © 2026 FlorNya &nbsp;·&nbsp;
+                <a href="{{ frontend_url }}" style="color:#e91e8c; text-decoration:none;">flornya.app</a>
+              </p>
+              <p style="margin:0; font-size:10px; color:#c0aab6;">
+                Cet email a été envoyé automatiquement, merci de ne pas y répondre.
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+
 </body>
 </html>

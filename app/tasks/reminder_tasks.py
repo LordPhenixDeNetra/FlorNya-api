@@ -77,11 +77,29 @@ async def _async_send_period_reminders() -> None:
                 if days_until == days_before:
                     if profile and profile.last_period_reminder_sent == today:
                         continue
+
                     await _push(
                         str(config.user_id),
                         f"Votre prochaine période est dans {days_before} jours.",
                         "period_reminder",
                     )
+
+                    # Email reminder
+                    from app.models.user import User as UserModel
+                    user_result = await session.execute(
+                        select(UserModel).where(UserModel.id == config.user_id)
+                    )
+                    user = user_result.scalar_one_or_none()
+                    if user:
+                        from app.services.email_service import EmailService
+                        email_service = EmailService()
+                        await email_service.send_period_reminder(
+                            to_email=user.email,
+                            first_name=user.first_name,
+                            days_before=days_before,
+                            next_period_date=next_period.strftime("%d/%m/%Y"),
+                        )
+
                     if profile:
                         profile.last_period_reminder_sent = today
 
