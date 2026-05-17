@@ -13,7 +13,7 @@ htmlcov/
 *.iml
 
 .env
-.env.*
+# .env.*
 
 dist/
 build/

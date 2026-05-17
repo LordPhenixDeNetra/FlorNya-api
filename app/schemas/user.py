@@ -37,6 +37,7 @@ class HealthCondition(str, enum.Enum):
 
 
 class ReproductiveStage(str, enum.Enum):
+    regular = "regular"
     menstruating = "menstruating"
     trying_to_conceive = "trying_to_conceive"
     pregnant = "pregnant"

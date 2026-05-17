@@ -95,7 +95,10 @@ class UserService:
             user.first_name = data.first_name
         user.onboarding_completed = True
 
-        stage = ReproductiveStage(data.reproductive_stage.value)
+        stage_value = data.reproductive_stage.value
+        if stage_value == "regular":
+            stage_value = "menstruating"
+        stage = ReproductiveStage(stage_value)
         existing = await self.profiles.get_by_user_id(user.id)
 
         health_enc = encrypt_sensitive(json.dumps([c.value for c in data.health_conditions]))
@@ -128,7 +131,10 @@ class UserService:
 
     async def upsert_female_profile(self, user: User, data: FemaleProfileUpsert) -> FemaleProfilePublic:
         existing = await self.profiles.get_by_user_id(user.id)
-        stage = ReproductiveStage(data.reproductive_stage.value)
+        stage_value = data.reproductive_stage.value
+        if stage_value == "regular":
+            stage_value = "menstruating"
+        stage = ReproductiveStage(stage_value)
         if existing is None:
             entity = FemaleProfile(
                 user_id=user.id,

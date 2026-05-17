@@ -1,9 +1,16 @@
 from collections.abc import AsyncGenerator
 
+import os
+
 import pytest
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.pool import StaticPool
+
+os.environ.setdefault("ENVIRONMENT", "test")
+os.environ.setdefault("DEBUG", "false")
+os.environ.setdefault("SECRET_KEY", "test_secret_key_please_change_in_prod_32bytes")
+os.environ.setdefault("ADMIN_API_KEY", "TEST_ADMIN_KEY")
 
 from app.core.database import get_async_session
 from app.models import Base

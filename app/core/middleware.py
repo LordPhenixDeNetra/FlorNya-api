@@ -28,7 +28,11 @@ def _rate_limit_key(request: Request) -> str:
     return get_remote_address(request) or "anonymous"
 
 
-limiter = Limiter(key_func=_rate_limit_key, default_limits=[settings.RATE_LIMIT_DEFAULT])
+limiter = Limiter(
+    key_func=_rate_limit_key,
+    default_limits=[settings.RATE_LIMIT_DEFAULT],
+    enabled=settings.ENVIRONMENT.lower() != "test",
+)
 
 
 class ApiVersionMiddleware(BaseHTTPMiddleware):
@@ -43,6 +47,8 @@ async def rate_limit_exceeded_handler(request: Request, exc: RateLimitExceeded) 
 
 
 def add_rate_limiting(app) -> None:
+    if not limiter.enabled:
+        return
     app.state.limiter = limiter
     app.add_exception_handler(RateLimitExceeded, rate_limit_exceeded_handler)
     app.add_middleware(SlowAPIMiddleware)

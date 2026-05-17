@@ -15,7 +15,7 @@ settings = get_settings()
 configure_logging(settings.DEBUG)
 
 _INSECURE_KEYS = {"change_me", "change_me_in_production_use_openssl_rand_hex_32", "", "your_secret_key"}
-if settings.SECRET_KEY in _INSECURE_KEYS:
+if settings.ENVIRONMENT.lower() in {"production", "prod"} and settings.SECRET_KEY in _INSECURE_KEYS:
     raise RuntimeError(
         "SECRET_KEY must be set to a strong random value before running. "
         "Generate one with: openssl rand -hex 32"

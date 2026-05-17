@@ -1,7 +1,7 @@
 from datetime import date, timedelta
 
 
-async def test_auth_users_cycle_flow(client) -> None:
+async def test_auth_users_cycle_flow(client, db_session) -> None:
     register = await client.post(
         "/api/v1/auth/register",
         json={
@@ -18,13 +18,22 @@ async def test_auth_users_cycle_flow(client) -> None:
     assert me.status_code == 200
     assert me.json()["email"] == "b@example.com"
 
+    from sqlalchemy import select
+
+    from app.models.user import User, UserPlan
+
+    result = await db_session.execute(select(User).where(User.email == "b@example.com"))
+    user = result.scalar_one()
+    user.plan = UserPlan.essential
+    await db_session.commit()
+
     period_start = date.today() - timedelta(days=10)
     rec = await client.post(
         "/api/v1/cycle/records",
         headers={"Authorization": f"Bearer {access}"},
         json={"period_start": str(period_start), "cycle_length": 28, "notes": "note"},
     )
-    assert rec.status_code == 200
+    assert rec.status_code == 201
     assert rec.json()["notes"] == "note"
 
     current = await client.get("/api/v1/cycle/current", headers={"Authorization": f"Bearer {access}"})

@@ -18,6 +18,13 @@ async def test_journal_text_encrypted_in_db(client, db_session) -> None:
     assert register.status_code == 200
     access = register.json()["access_token"]
 
+    from app.models.user import User, UserPlan
+
+    result_u = await db_session.execute(select(User).where(User.email == "a@example.com"))
+    user = result_u.scalar_one()
+    user.plan = UserPlan.essential
+    await db_session.commit()
+
     mood_resp = await client.post(
         "/api/v1/mental/mood",
         headers={"Authorization": f"Bearer {access}"},

@@ -3,7 +3,7 @@ from datetime import date, datetime
 from decimal import Decimal
 from uuid import UUID
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_serializer
 
 
 class CervicalMucusType(str, enum.Enum):
@@ -36,6 +36,14 @@ class FertilityLogPublic(BaseModel):
     lh_test_result: LHTestResult | None
     notes: str | None
     created_at: datetime
+
+    @field_serializer("bbt_celsius")
+    def serialize_bbt(self, value: Decimal | None) -> str | None:
+        if value is None:
+            return None
+        s = format(value, "f")
+        s = s.rstrip("0").rstrip(".")
+        return s
 
 
 class FertilityScoreResponse(BaseModel):

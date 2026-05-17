@@ -166,7 +166,8 @@ async def test_unregister_device_token(client) -> None:
         headers={"Authorization": f"Bearer {token}"},
         json={"token": device_token, "platform": "web"},
     )
-    r = await client.delete(
+    r = await client.request(
+        "DELETE",
         "/api/v1/users/me/device-token",
         headers={"Authorization": f"Bearer {token}"},
         json={"token": device_token, "platform": "web"},
