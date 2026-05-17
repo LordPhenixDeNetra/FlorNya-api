@@ -298,7 +298,7 @@ class CycleService:
             records=records,
             generated_at=datetime.now(timezone.utc).strftime("%d/%m/%Y"),
         )
-        return weasyprint.HTML(string=html_str).write_pdf()
+        return weasyprint.HTML(string=html_str, base_url=template_dir.as_uri() + "/").write_pdf()
 
     # ── Private helpers ───────────────────────────────────────────────────
 

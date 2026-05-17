@@ -1,0 +1,83 @@
+/* ── Reset & base ─────────────────────────────────────────────────────────── */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 12px;
+  color: #333;
+  background: #fff;
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+.header {
+  color: white;
+  padding: 32px 40px;
+  margin-bottom: 32px;
+}
+.header h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
+.header p  { font-size: 12px; opacity: 0.85; margin-top: 6px; }
+
+/* ── Layout ──────────────────────────────────────────────────────────────── */
+.container { padding: 0 40px 40px; }
+
+.section { margin-bottom: 24px; }
+
+/* ── Headings ────────────────────────────────────────────────────────────── */
+h2 {
+  font-size: 14px;
+  font-weight: 700;
+  margin: 24px 0 10px;
+  border-bottom: 2px solid;
+  padding-bottom: 4px;
+}
+
+h3 {
+  font-size: 12px;
+  font-weight: 700;
+  margin: 14px 0 6px;
+}
+
+/* ── Tables ──────────────────────────────────────────────────────────────── */
+table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
+
+thead th {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 8px 10px;
+  text-align: left;
+  font-weight: 700;
+}
+
+tbody tr:nth-child(even) { background: #fafafa; }
+tbody td { padding: 7px 10px; border-bottom: 1px solid #f0f0f0; font-size: 11px; }
+
+/* ── Badge ───────────────────────────────────────────────────────────────── */
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+/* ── Disclaimer ──────────────────────────────────────────────────────────── */
+.disclaimer {
+  background: #fff3e0;
+  border-left: 3px solid #ff9800;
+  padding: 10px 14px;
+  margin-top: 24px;
+  font-size: 10px;
+  color: #e65100;
+  border-radius: 0 4px 4px 0;
+}
+
+/* ── Footer ──────────────────────────────────────────────────────────────── */
+.footer {
+  margin-top: 40px;
+  padding-top: 10px;
+  border-top: 1px solid #eee;
+  font-size: 10px;
+  color: #aaa;
+  text-align: center;
+}

@@ -1,0 +1,55 @@
+/* ── Monthly report — thème violet (#6a1b9a) ─────────────────────────────── */
+
+.header { background: linear-gradient(135deg, #6a1b9a 0%, #ce93d8 100%); }
+
+h2 { color: #6a1b9a; border-color: #f3e5f5; }
+h3 { color: #7b1fa2; }
+
+thead th { background: #f3e5f5; color: #4a148c; }
+
+/* ── Stat cards ──────────────────────────────────────────────────────────── */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin: 12px 0;
+}
+.stat-card {
+  background: #f9f0ff;
+  border-left: 3px solid #9c27b0;
+  padding: 10px 12px;
+  border-radius: 4px;
+}
+.stat-card .value { font-size: 20px; font-weight: 700; color: #6a1b9a; }
+.stat-card .label { font-size: 10px; color: #666; margin-top: 2px; }
+
+/* ── Mood bar ────────────────────────────────────────────────────────────── */
+.mood-bar-container { display: flex; align-items: center; gap: 8px; margin: 2px 0; }
+.mood-dot { width: 10px; height: 10px; border-radius: 50%; background: #9c27b0; flex-shrink: 0; }
+.mood-bar { height: 10px; border-radius: 5px; background: linear-gradient(90deg, #e91e63, #9c27b0); }
+
+/* ── AI insight block ────────────────────────────────────────────────────── */
+.ai-insight {
+  background: #f8f4ff;
+  border-left: 4px solid #7b1fa2;
+  padding: 12px 16px;
+  margin: 16px 0;
+  font-size: 11px;
+  line-height: 1.6;
+  color: #444;
+  border-radius: 0 4px 4px 0;
+}
+
+/* ── Status badges ───────────────────────────────────────────────────────── */
+.badge-green  { background: #e8f5e9; color: #2e7d32; }
+.badge-orange { background: #fff3e0; color: #e65100; }
+.badge-red    { background: #ffebee; color: #c62828; }
+
+/* ── Phase colours ───────────────────────────────────────────────────────── */
+.phase-menstrual  { color: #e53935; }
+.phase-follicular { color: #43a047; }
+.phase-ovulatory  { color: #fb8c00; }
+.phase-luteal     { color: #8e24aa; }
+
+/* ── Footer spacing ──────────────────────────────────────────────────────── */
+.footer { margin-top: 36px; }

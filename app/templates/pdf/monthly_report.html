@@ -2,42 +2,8 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 12px; color: #333; }
-    .header {
-      background: linear-gradient(135deg, #6a1b9a 0%, #ce93d8 100%);
-      color: white; padding: 32px 40px; margin-bottom: 28px;
-    }
-    .header h1 { font-size: 22px; font-weight: 700; }
-    .header p { font-size: 12px; opacity: 0.85; margin-top: 6px; }
-    .container { padding: 0 40px 40px; }
-    .section { margin-bottom: 24px; }
-    h2 { font-size: 14px; font-weight: 700; color: #6a1b9a; margin: 20px 0 10px; border-bottom: 2px solid #f3e5f5; padding-bottom: 4px; }
-    h3 { font-size: 12px; font-weight: 700; color: #7b1fa2; margin: 14px 0 6px; }
-    table { width: 100%; border-collapse: collapse; margin-bottom: 12px; }
-    thead th { background: #f3e5f5; color: #4a148c; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; padding: 7px 10px; text-align: left; font-weight: 700; }
-    tbody tr:nth-child(even) { background: #fafafa; }
-    tbody td { padding: 6px 10px; border-bottom: 1px solid #f0f0f0; font-size: 11px; }
-    .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 12px 0; }
-    .stat-card { background: #f9f0ff; border-left: 3px solid #9c27b0; padding: 10px 12px; border-radius: 4px; }
-    .stat-card .value { font-size: 20px; font-weight: 700; color: #6a1b9a; }
-    .stat-card .label { font-size: 10px; color: #666; margin-top: 2px; }
-    .mood-bar-container { display: flex; align-items: center; gap: 8px; margin: 2px 0; }
-    .mood-dot { width: 10px; height: 10px; border-radius: 50%; background: #9c27b0; flex-shrink: 0; }
-    .mood-bar { height: 10px; border-radius: 5px; background: linear-gradient(90deg, #e91e63, #9c27b0); }
-    .ai-insight { background: #f8f4ff; border-left: 4px solid #7b1fa2; padding: 12px 16px; margin: 16px 0; font-size: 11px; line-height: 1.6; color: #444; border-radius: 0 4px 4px 0; }
-    .disclaimer { background: #fff3e0; border-left: 3px solid #ff9800; padding: 10px 14px; margin-top: 20px; font-size: 10px; color: #e65100; }
-    .footer { margin-top: 36px; padding-top: 10px; border-top: 1px solid #eee; font-size: 10px; color: #aaa; text-align: center; }
-    .badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 700; }
-    .badge-green { background: #e8f5e9; color: #2e7d32; }
-    .badge-orange { background: #fff3e0; color: #e65100; }
-    .badge-red { background: #ffebee; color: #c62828; }
-    .phase-menstrual { color: #e53935; }
-    .phase-follicular { color: #43a047; }
-    .phase-ovulatory { color: #fb8c00; }
-    .phase-luteal { color: #8e24aa; }
-  </style>
+  <link rel="stylesheet" href="base.css">
+  <link rel="stylesheet" href="monthly_report.css">
 </head>
 <body>
   <div class="header">

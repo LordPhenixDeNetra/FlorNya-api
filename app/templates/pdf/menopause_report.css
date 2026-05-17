@@ -1,0 +1,10 @@
+/* ── Menopause report — thème rose foncé (#ad1457) ───────────────────────── */
+
+.header { background: linear-gradient(135deg, #ad1457 0%, #f06292 100%); }
+
+h2 { color: #ad1457; border-color: #fce4ec; }
+
+thead th { background: #fce4ec; color: #880e4f; }
+
+/* ── Hot flash highlight ─────────────────────────────────────────────────── */
+.hot-flash { font-weight: 700; color: #e91e63; }

@@ -1,0 +1,15 @@
+/* ── Pain report — thème mauve foncé (#7b1fa2) ───────────────────────────── */
+
+.header { background: linear-gradient(135deg, #7b1fa2 0%, #ab47bc 100%); }
+
+h2 { color: #7b1fa2; border-color: #f3e5f5; }
+
+thead th { background: #f3e5f5; color: #4a148c; }
+
+/* ── Pain intensity bar ──────────────────────────────────────────────────── */
+.pain-bar {
+  display: inline-block;
+  height: 10px;
+  border-radius: 5px;
+  background: #ab47bc;
+}
