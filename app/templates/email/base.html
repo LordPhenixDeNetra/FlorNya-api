@@ -7,67 +7,7 @@
   <meta name="x-apple-disable-message-reformatting">
   <title>{% block title %}FlorNya{% endblock %}</title>
   <style type="text/css">
-    /* ── Reset ──────────────────────────────────────────────────────── */
-    body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
-    table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; border-collapse: collapse; }
-    img { border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
-    body { margin: 0 !important; padding: 0 !important; background-color: #faf5f8;
-           font-family: Arial, Helvetica, sans-serif; }
-
-    /* ── Button ─────────────────────────────────────────────────────── */
-    .btn-primary {
-      display: inline-block;
-      padding: 14px 40px;
-      background-color: #e91e8c;
-      color: #ffffff !important;
-      text-decoration: none;
-      border-radius: 8px;
-      font-size: 15px;
-      font-weight: 700;
-      font-family: Arial, Helvetica, sans-serif;
-      letter-spacing: 0.2px;
-    }
-
-    /* ── Feature row ────────────────────────────────────────────────── */
-    .feature-icon-td { width: 36px; font-size: 18px; vertical-align: middle; padding-right: 12px; }
-    .feature-text-td { font-size: 14px; color: #4a3a46; vertical-align: middle; line-height: 1.5; }
-    .feature-row-td  { padding: 10px 0; border-bottom: 1px solid #f7eef4; }
-    .feature-row-last { padding: 10px 0; }
-
-    /* ── Info block ─────────────────────────────────────────────────── */
-    .info-block-td {
-      padding: 14px 18px;
-      background-color: #fdf5f9;
-      border-left: 3px solid #e91e8c;
-      border-radius: 0 8px 8px 0;
-      font-size: 14px;
-      color: #6b5b6e;
-    }
-
-    /* ── Dark mode ──────────────────────────────────────────────────── */
-    @media (prefers-color-scheme: dark) {
-      body              { background-color: #18090f !important; }
-      .outer-bg         { background-color: #18090f !important; }
-      .email-card       { background-color: #26111b !important; }
-      .header-td        { background-color: #26111b !important; }
-      .body-td          { background-color: #26111b !important; color: #f0daea !important; }
-      .footer-td        { background-color: #1a0d14 !important; border-color: #3d1f30 !important; }
-      .divider-inner    { background-color: #3d1f30 !important; }
-      .logo-name        { color: #f5e0ee !important; }
-      .feature-text-td  { color: #d4b0c4 !important; }
-      .feature-row-td, .feature-row-last { border-color: #3d1f30 !important; }
-      .info-block-td    { background-color: #321526 !important; color: #d4a0b8 !important; }
-    }
-
-    /* ── Mobile ─────────────────────────────────────────────────────── */
-    @media only screen and (max-width: 620px) {
-      .email-card  { border-radius: 0 !important; }
-      .header-td   { padding: 28px 24px 22px !important; }
-      .body-td     { padding: 32px 24px !important; }
-      .inner-div   { margin: 0 24px !important; }
-      .footer-td   { padding: 20px 24px !important; }
-      .btn-primary { display: block !important; text-align: center !important; }
-    }
+    {% autoescape false %}{% include "base.css" %}{% endautoescape %}
   </style>
 </head>
 <body style="margin:0; padding:0; background-color:#faf5f8;">

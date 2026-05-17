@@ -2,64 +2,55 @@
 {% block title %}Bienvenue sur FlorNya{% endblock %}
 {% block content %}
 
-<!-- Title -->
-<h2 style="margin:0 0 6px; font-size:20px; font-weight:700; color:#1a1a2e; letter-spacing:-0.2px;">
-  Bienvenue sur FlorNya
-</h2>
-<p style="margin:0 0 22px; font-size:12px; color:#a09098; letter-spacing:0.6px; text-transform:uppercase;">
-  Votre parcours de bien-être féminin commence ici.
-</p>
+<h2 class="email-h2">Bienvenue sur FlorNya</h2>
+<p class="email-subtitle">Votre parcours de bien-être féminin commence ici.</p>
 
-<!-- Accent line -->
-<div style="width:40px; height:2px; background-color:#e91e8c; margin-bottom:28px;"></div>
+<div class="accent-line"></div>
 
-<!-- Greeting -->
-<p style="margin:0 0 14px; color:#1a1a2e;">
+<p class="email-greeting">
   Bonjour{% if first_name %} <strong>{{ first_name }}</strong>{% endif %},
 </p>
-<p style="margin:0 0 32px; color:#4a3a46; font-size:15px;">
+<p class="email-body-text">
   Votre compte FlorNya a été créé avec succès. Nous sommes là pour vous accompagner chaque jour, à chaque phase de votre cycle.
 </p>
 
-<!-- Feature list -->
-<p style="margin:0 0 12px; font-size:11px; font-weight:700; color:#a09098; letter-spacing:0.8px; text-transform:uppercase;">
-  Ce qui vous attend
-</p>
-<table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-bottom:36px;">
+<p class="section-label">Ce qui vous attend</p>
+
+<table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" class="list-table">
   <tr>
-    <td class="feature-row-td" style="padding:11px 0; border-bottom:1px solid #f7eef4;">
+    <td class="feature-row-td">
       <table role="presentation" cellspacing="0" cellpadding="0" border="0">
         <tr>
-          <td class="feature-icon-td" style="width:36px; font-size:18px; vertical-align:middle; padding-right:14px;">🌙</td>
-          <td class="feature-text-td" style="font-size:14px; color:#4a3a46; vertical-align:middle; line-height:1.5;">
-            <strong style="color:#1a1a2e; font-size:14px;">Suivi de cycle</strong><br>
-            <span style="font-size:13px; color:#8a7a86;">Suivez vos phases au quotidien</span>
+          <td class="feature-icon-td">🌙</td>
+          <td class="feature-text-td">
+            <strong class="feature-title">Suivi de cycle</strong><br>
+            <span class="feature-sub">Suivez vos phases au quotidien</span>
           </td>
         </tr>
       </table>
     </td>
   </tr>
   <tr>
-    <td class="feature-row-td" style="padding:11px 0; border-bottom:1px solid #f7eef4;">
+    <td class="feature-row-td">
       <table role="presentation" cellspacing="0" cellpadding="0" border="0">
         <tr>
-          <td class="feature-icon-td" style="width:36px; font-size:18px; vertical-align:middle; padding-right:14px;">💆</td>
-          <td class="feature-text-td" style="font-size:14px; color:#4a3a46; vertical-align:middle; line-height:1.5;">
-            <strong style="color:#1a1a2e; font-size:14px;">Humeur & énergie</strong><br>
-            <span style="font-size:13px; color:#8a7a86;">Journalisez vos ressentis chaque jour</span>
+          <td class="feature-icon-td">💆</td>
+          <td class="feature-text-td">
+            <strong class="feature-title">Humeur &amp; énergie</strong><br>
+            <span class="feature-sub">Journalisez vos ressentis chaque jour</span>
           </td>
         </tr>
       </table>
     </td>
   </tr>
   <tr>
-    <td class="feature-row-last" style="padding:11px 0;">
+    <td class="feature-row-last">
       <table role="presentation" cellspacing="0" cellpadding="0" border="0">
         <tr>
-          <td class="feature-icon-td" style="width:36px; font-size:18px; vertical-align:middle; padding-right:14px;">🔔</td>
-          <td class="feature-text-td" style="font-size:14px; color:#4a3a46; vertical-align:middle; line-height:1.5;">
-            <strong style="color:#1a1a2e; font-size:14px;">Rappels personnalisés</strong><br>
-            <span style="font-size:13px; color:#8a7a86;">Ne ratez plus aucune étape importante</span>
+          <td class="feature-icon-td">🔔</td>
+          <td class="feature-text-td">
+            <strong class="feature-title">Rappels personnalisés</strong><br>
+            <span class="feature-sub">Ne ratez plus aucune étape importante</span>
           </td>
         </tr>
       </table>
@@ -67,20 +58,15 @@
   </tr>
 </table>
 
-<!-- CTA -->
-<div style="text-align:center; padding-bottom:32px;">
-  <a href="{{ frontend_url }}/onboarding" class="btn-primary"
-     style="display:inline-block; padding:14px 40px; background-color:#e91e8c; color:#ffffff;
-            text-decoration:none; border-radius:8px; font-size:15px; font-weight:700;
-            font-family:Arial,Helvetica,sans-serif;">
+<div class="cta-center">
+  <a href="{{ frontend_url }}/onboarding" class="btn-primary">
     Commencer l'onboarding &rarr;
   </a>
 </div>
 
-<!-- Support -->
-<p style="margin:0; font-size:13px; color:#a09098; text-align:center;">
+<p class="note-text">
   Des questions ?
-  <a href="mailto:hello@flornya.app" style="color:#e91e8c; text-decoration:none;">hello@flornya.app</a>
+  <a href="mailto:hello@flornya.app">hello@flornya.app</a>
 </p>
 
 {% endblock %}
