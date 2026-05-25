@@ -1,6 +1,7 @@
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
+from fastapi.security import OAuth2PasswordRequestForm
 
 from app.api.deps import get_auth_service, get_current_user
 from app.config import get_settings
@@ -62,6 +63,26 @@ async def login(
 
     if isinstance(result, dict):
         return TwoFactorRequired(**result)
+    access, refresh = result
+    return TokenResponse(access_token=access, refresh_token=refresh)
+
+
+@router.post("/token", response_model=TokenResponse)
+@limiter.limit(settings.RATE_LIMIT_AUTH)
+async def token(
+    request: Request,
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    service: AuthService = Depends(get_auth_service),
+) -> TokenResponse:
+    try:
+        result = await service.login(email=form_data.username, password=form_data.password)
+    except ValueError as exc:
+        if str(exc) == "locked_out":
+            raise HTTPException(status_code=429, detail="locked_out") from exc
+        raise HTTPException(status_code=401, detail="invalid_credentials") from exc
+
+    if isinstance(result, dict):
+        raise HTTPException(status_code=400, detail="two_factor_required")
     access, refresh = result
     return TokenResponse(access_token=access, refresh_token=refresh)
 

@@ -1,7 +1,7 @@
 from uuid import UUID
 
 from fastapi import Depends, HTTPException, Request
-from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import get_settings
@@ -57,7 +57,7 @@ from app.services.user_service import UserService
 
 settings = get_settings()
 
-bearer = HTTPBearer(auto_error=False)
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/token", auto_error=False)
 
 # ── Repository providers ─────────────────────────────────────────────────────
 
@@ -465,14 +465,14 @@ async def get_dashboard_service(
 
 async def get_current_user(
     request: Request,
-    creds: HTTPAuthorizationCredentials | None = Depends(bearer),
+    token: str | None = Depends(oauth2_scheme),
     users: UserRepository = Depends(get_user_repository),
 ) -> User:
     from app.core.redis import redis_client
 
-    if creds is None:
+    if token is None:
         raise HTTPException(status_code=401, detail="missing_token")
-    payload = decode_token(creds.credentials)
+    payload = decode_token(token)
     if payload.get("typ") != "access":
         raise HTTPException(status_code=401, detail="invalid_token")
     sub = payload.get("sub")
