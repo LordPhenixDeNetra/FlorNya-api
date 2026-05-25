@@ -3,6 +3,7 @@ from typing import Sequence, Union
 
 import sqlalchemy as sa
 from alembic import op
+from sqlalchemy.dialects import postgresql
 
 revision: str = "0004_phase3"
 down_revision: Union[str, None] = "0003_phase2"
@@ -12,26 +13,30 @@ depends_on: Union[str, Sequence[str], None] = None
 
 def upgrade() -> None:
     # ── New enums ──────────────────────────────────────────────────────────
-    journal_prompt_type = sa.Enum(
+    journal_prompt_type = postgresql.ENUM(
         "free", "gratitude", "challenge", "reflection", "ai_generated",
         name="journalprompttype",
+        create_type=False,
     )
-    mental_alert_type = sa.Enum("distress", "spm", "tdpm", name="mentalalerttype")
-    discharge_type = sa.Enum(
+    mental_alert_type = postgresql.ENUM("distress", "spm", "tdpm", name="mentalalerttype", create_type=False)
+    discharge_type = postgresql.ENUM(
         "none", "normal_clear", "normal_white",
         "abnormal_yellow", "abnormal_green", "abnormal_gray", "other",
         name="dischargetype",
+        create_type=False,
     )
-    post_category = sa.Enum(
+    post_category = postgresql.ENUM(
         "cycle", "fertility", "pregnancy", "hormonal_health", "menopause",
         "nutrition", "mental_health", "intimate_health", "general",
         name="postcategory",
+        create_type=False,
     )
-    consultation_status = sa.Enum(
+    consultation_status = postgresql.ENUM(
         "pending", "confirmed", "completed", "cancelled",
         name="consultationstatus",
+        create_type=False,
     )
-    chat_role = sa.Enum("user", "assistant", name="chatrole")
+    chat_role = postgresql.ENUM("user", "assistant", name="chatrole", create_type=False)
 
     for enum in (journal_prompt_type, mental_alert_type, discharge_type, post_category, consultation_status, chat_role):
         enum.create(op.get_bind(), checkfirst=True)

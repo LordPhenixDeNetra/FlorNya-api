@@ -3,6 +3,7 @@ from typing import Sequence, Union
 
 import sqlalchemy as sa
 from alembic import op
+from sqlalchemy.dialects import postgresql
 
 revision: str = "0003_phase2"
 down_revision: Union[str, None] = "0002_phase1"
@@ -11,12 +12,18 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    cervical_mucus = sa.Enum("dry", "creamy", "watery", "egg_white", name="cervicalmucustype")
-    lh_test_result = sa.Enum("negative", "positive", "peak", name="lhtestresult")
-    pregnancy_status = sa.Enum("active", "postpartum", "ended", name="pregnancystatus")
-    appointment_type = sa.Enum("prenatal_visit", "ultrasound", "blood_test", "other", name="appointmenttype")
-    breast_side = sa.Enum("left", "right", "both", name="breastside")
-    treatment_type = sa.Enum("pill", "patch", "iud", "implant", "injection", "ring", "other", name="treatmenttype")
+    cervical_mucus = postgresql.ENUM(
+        "dry", "creamy", "watery", "egg_white", name="cervicalmucustype", create_type=False
+    )
+    lh_test_result = postgresql.ENUM("negative", "positive", "peak", name="lhtestresult", create_type=False)
+    pregnancy_status = postgresql.ENUM("active", "postpartum", "ended", name="pregnancystatus", create_type=False)
+    appointment_type = postgresql.ENUM(
+        "prenatal_visit", "ultrasound", "blood_test", "other", name="appointmenttype", create_type=False
+    )
+    breast_side = postgresql.ENUM("left", "right", "both", name="breastside", create_type=False)
+    treatment_type = postgresql.ENUM(
+        "pill", "patch", "iud", "implant", "injection", "ring", "other", name="treatmenttype", create_type=False
+    )
 
     for enum in (cervical_mucus, lh_test_result, pregnancy_status, appointment_type, breast_side, treatment_type):
         enum.create(op.get_bind(), checkfirst=True)

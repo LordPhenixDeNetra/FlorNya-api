@@ -881,3 +881,7 @@ flornya-api/
 ## Licence
 
 Propriétaire — © 2026 FlorNya. Tous droits réservés.
+
+
+
+<!-- poetry run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000  -->

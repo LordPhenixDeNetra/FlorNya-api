@@ -3,6 +3,7 @@ from typing import Sequence, Union
 
 import sqlalchemy as sa
 from alembic import op
+from sqlalchemy.dialects import postgresql
 
 revision: str = "0005_extras"
 down_revision: Union[str, None] = "0004_phase3"
@@ -18,7 +19,7 @@ def upgrade() -> None:
         op.execute("ALTER TYPE userplan ADD VALUE IF NOT EXISTS 'essential' AFTER 'free'")
 
     # ── device_tokens ─────────────────────────────────────────────────────
-    device_platform = sa.Enum("ios", "android", "web", name="deviceplatform")
+    device_platform = postgresql.ENUM("ios", "android", "web", name="deviceplatform", create_type=False)
     device_platform.create(op.get_bind(), checkfirst=True)
 
     op.create_table(

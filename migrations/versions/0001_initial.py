@@ -2,6 +2,7 @@ from typing import Sequence, Union
 
 import sqlalchemy as sa
 from alembic import op
+from sqlalchemy.dialects import postgresql
 
 revision: str = "0001_initial"
 down_revision: Union[str, None] = None
@@ -10,8 +11,8 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    user_plan = sa.Enum("free", "bloom", "bloom_pro", name="userplan")
-    reproductive_stage = sa.Enum(
+    user_plan = postgresql.ENUM("free", "bloom", "bloom_pro", name="userplan", create_type=False)
+    reproductive_stage = postgresql.ENUM(
         "menstruating",
         "trying_to_conceive",
         "pregnant",
@@ -19,6 +20,7 @@ def upgrade() -> None:
         "perimenopause",
         "menopause",
         name="reproductivestage",
+        create_type=False,
     )
 
     user_plan.create(op.get_bind(), checkfirst=True)

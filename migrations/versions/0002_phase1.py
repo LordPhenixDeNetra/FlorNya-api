@@ -2,6 +2,7 @@ from typing import Sequence, Union
 
 import sqlalchemy as sa
 from alembic import op
+from sqlalchemy.dialects import postgresql
 
 revision: str = "0002_phase1"
 down_revision: Union[str, None] = "0001_initial"
@@ -10,8 +11,12 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    flow_intensity = sa.Enum("spotting", "light", "medium", "heavy", name="flowintensity")
-    reminder_type = sa.Enum("period", "medication", "hydration", "mood_checkin", name="remindertype")
+    flow_intensity = postgresql.ENUM(
+        "spotting", "light", "medium", "heavy", name="flowintensity", create_type=False
+    )
+    reminder_type = postgresql.ENUM(
+        "period", "medication", "hydration", "mood_checkin", name="remindertype", create_type=False
+    )
 
     flow_intensity.create(op.get_bind(), checkfirst=True)
     reminder_type.create(op.get_bind(), checkfirst=True)
